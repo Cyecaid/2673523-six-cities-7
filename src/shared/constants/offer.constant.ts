@@ -1,4 +1,4 @@
-import {Amenity, City, HousingType} from '../types/index.js';
+import {Amenity, City, HousingType, Location} from '../types/index.js';
 
 export const CITIES: City[] = ['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'];
 export const HOUSING_TYPES: HousingType[] = ['apartment', 'house', 'room', 'hotel'];
@@ -28,3 +28,12 @@ export const CoordinateLimit = {
   Latitude: {min: -90, max: 90},
   Longitude: {min: -180, max: 180},
 } as const;
+
+export const CITY_LOCATIONS: Record<City, Location> = {
+  Paris: {latitude: 48.85661, longitude: 2.351499},
+  Cologne: {latitude: 50.938361, longitude: 6.959974},
+  Brussels: {latitude: 50.846557, longitude: 4.351697},
+  Amsterdam: {latitude: 52.370216, longitude: 4.895168},
+  Hamburg: {latitude: 53.550341, longitude: 10.000654},
+  Dusseldorf: {latitude: 51.225402, longitude: 6.776314},
+};
