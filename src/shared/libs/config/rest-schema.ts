@@ -11,19 +11,19 @@ export type RestSchema = {
 
 export const restSchema = convict<RestSchema>({
   PORT: {
-    doc: 'Порт для входящих подключений',
+    doc: 'Порт для подключений',
     format: 'port',
     env: 'PORT',
     default: null,
   },
   DB_HOST: {
-    doc: 'IP-адрес сервера базы данных',
+    doc: 'IP-адрес БД',
     format: 'ipaddress',
     env: 'DB_HOST',
     default: null,
   },
   SALT: {
-    doc: 'Соль для хеширования паролей',
+    doc: 'Соль хеширования паролей',
     format: String,
     env: 'SALT',
     default: null,

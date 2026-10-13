@@ -22,11 +22,11 @@ export class RestConfig implements Config<RestSchema> {
       .filter(([, value]) => value === null || value === '')
       .map(([key]) => key);
     if (missing.length > 0) {
-      throw new Error(`Не заданы обязательные переменные окружения: ${missing.join(', ')}`);
+      throw new Error(`Не заданы обязательные параметры: ${missing.join(', ')}`);
     }
 
     this.config = restSchema.getProperties();
-    this.logger.info('Файл .env прочитан, конфигурация загружена');
+    this.logger.info('Конфиг загружена');
   }
 
   public get<K extends keyof RestSchema>(key: K): RestSchema[K] {

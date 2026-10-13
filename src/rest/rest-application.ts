@@ -12,6 +12,6 @@ export class RestApplication {
 
   public async init(): Promise<void> {
     this.logger.info('Приложение инициализировано');
-    this.logger.info(`Порт из переменной окружения PORT: ${this.config.get('PORT')}`);
+    this.logger.info(`Порт: ${this.config.get('PORT')}`);
   }
 }
