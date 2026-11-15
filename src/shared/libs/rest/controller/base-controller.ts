@@ -13,7 +13,8 @@ export abstract class BaseController implements Controller {
   constructor(@unmanaged() protected readonly logger: Logger) {}
 
   public addRoute(route: Route): void {
-    this.router[route.method](route.path, asyncHandler(route.handler.bind(this)));
+    const middlewares = (route.middlewares ?? []).map((middleware) => asyncHandler(middleware.execute.bind(middleware)));
+    this.router[route.method](route.path, ...middlewares, asyncHandler(route.handler.bind(this)));
     this.logger.info(`Зарегистрирован маршрут ${route.method.toUpperCase()} ${route.path}`);
   }
 

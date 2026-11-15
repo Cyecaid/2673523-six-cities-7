@@ -17,7 +17,7 @@ export class AppExceptionFilter implements ExceptionFilter {
 
   private handleHttpError(error: HttpError, req: Request, res: Response): void {
     this.logger.warn(`${req.method} ${req.originalUrl} → ${error.httpStatusCode}: ${error.message}${error.detail ? ` [${error.detail}]` : ''}`);
-    res.status(error.httpStatusCode).json(createErrorObject(error.message));
+    res.status(error.httpStatusCode).json(createErrorObject(error.message, error.details));
   }
 
   private handleServerError(error: Error, req: Request, res: Response): void {

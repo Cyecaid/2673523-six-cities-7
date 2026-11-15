@@ -2,6 +2,7 @@ export * from './offer.entity.js';
 export * from './offer.constant.js';
 export * from './dto/create-offer.dto.js';
 export * from './dto/update-offer.dto.js';
+export * from './dto/location.dto.js';
 export * from './rdo/location.rdo.js';
 export * from './rdo/offer-preview.rdo.js';
 export * from './rdo/offer.rdo.js';
