@@ -24,6 +24,7 @@ Content-Type: application/json
 
 ### Проверка состояния
 GET http://localhost:4000/users/login
+Authorization: Bearer {{accessToken}}
 
 ### Загрузка аватара
 POST http://localhost:4000/users/avatar

@@ -7,7 +7,6 @@ import {
   IsBoolean,
   IsIn,
   IsInt,
-  IsMongoId,
   IsString,
   Length,
   Max,
@@ -27,8 +26,6 @@ export class CreateOfferDto {
   @Length(OfferLimit.Description.min, OfferLimit.Description.max)
   public description!: string;
 
-  public postDate?: Date;
-
   @IsIn(CITIES)
   public city!: City;
 
@@ -43,8 +40,6 @@ export class CreateOfferDto {
 
   @IsBoolean()
   public isPremium!: boolean;
-
-  public rating?: number;
 
   @IsIn(HOUSING_TYPES)
   public type!: HousingType;
@@ -70,10 +65,13 @@ export class CreateOfferDto {
   @IsIn(AMENITIES, {each: true})
   public amenities!: Amenity[];
 
-  @IsMongoId()
-  public authorId!: string;
-
   @ValidateNested()
   @Type(() => LocationDto)
   public location!: LocationDto;
 }
+
+export type CreateOfferData = CreateOfferDto & {
+  authorId: string;
+  postDate?: Date;
+  rating?: number;
+};

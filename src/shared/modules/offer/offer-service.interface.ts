@@ -1,12 +1,12 @@
 import {DocumentType} from '@typegoose/typegoose';
 import {City} from '../../types/index.js';
 import {EntityService} from '../../libs/entity-service/index.js';
-import {CreateOfferDto} from './dto/create-offer.dto.js';
+import {CreateOfferData} from './dto/create-offer.dto.js';
 import {UpdateOfferDto} from './dto/update-offer.dto.js';
 import {OfferEntity} from './offer.entity.js';
 
 export interface OfferService extends EntityService<OfferEntity> {
-  create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>>;
+  create(dto: CreateOfferData): Promise<DocumentType<OfferEntity>>;
   find(count?: number): Promise<DocumentType<OfferEntity>[]>;
   findPremiumByCity(city: City): Promise<DocumentType<OfferEntity>[]>;
   updateById(offerId: string, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null>;

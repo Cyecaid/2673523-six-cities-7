@@ -4,7 +4,7 @@ import {Component} from '../../types/index.js';
 import {Logger} from '../../libs/logger/index.js';
 import {MongoEntityService} from '../../libs/entity-service/index.js';
 import {OfferService} from '../offer/index.js';
-import {CreateCommentDto} from './dto/create-comment.dto.js';
+import {CreateCommentData} from './dto/create-comment.dto.js';
 import {CommentService} from './comment-service.interface.js';
 import {CommentEntity} from './comment.entity.js';
 import {DEFAULT_COMMENT_COUNT} from './comment.constant.js';
@@ -19,7 +19,7 @@ export class DefaultCommentService extends MongoEntityService<CommentEntity> imp
     super(commentModel);
   }
 
-  public async create(dto: CreateCommentDto): Promise<DocumentType<CommentEntity>> {
+  public async create(dto: CreateCommentData): Promise<DocumentType<CommentEntity>> {
     const comment = await this.model.create(dto);
     await this.offerService.updateCommentStats(dto.offerId);
     this.logger.info(`Добавлен комментарий к офферу ${dto.offerId}`);

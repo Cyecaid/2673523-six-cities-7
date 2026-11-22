@@ -116,7 +116,8 @@ npm run cli -- --import ./mocks/offers.tsv aboba aboba 127.0.0.1 six-cities chan
 - `DB_USER=aboba` — логин для подключения к базе данных;
 - `DB_PASSWORD=aboba` — пароль для подключения к базе данных;
 - `DB_NAME=six-cities` — имя базы данных;
-- `SALT=change-me-to-random-string` — соль для хеширования паролей.
+- `SALT=change-me-to-random-string` — соль для хеширования паролей;
+- `JWT_SECRET=change-me-to-a-separate-random-string` — отдельный секрет для подписи JWT.
 
 ## Структура проекта
 
