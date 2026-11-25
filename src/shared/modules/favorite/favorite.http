@@ -1,8 +1,11 @@
 ### Список избранного
 GET http://localhost:4000/favorites
+Authorization: Bearer {{accessToken}}
 
 ### Добавить в избранное
 PUT http://localhost:4000/favorites/{{offerId}}
+Authorization: Bearer {{accessToken}}
 
 ### Убрать из избранного
 DELETE http://localhost:4000/favorites/{{offerId}}
+Authorization: Bearer {{accessToken}}

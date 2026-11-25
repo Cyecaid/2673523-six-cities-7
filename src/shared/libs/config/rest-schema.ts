@@ -66,7 +66,11 @@ export const restSchema = convict<RestSchema>({
   },
   JWT_SECRET: {
     doc: 'Секрет для подписи токенов авторизации',
-    format: String,
+    format: (value: unknown) => {
+      if (typeof value !== 'string' || !value.trim()) {
+        throw new Error('JWT_SECRET должен быть непустой строкой');
+      }
+    },
     env: 'JWT_SECRET',
     default: null,
   },

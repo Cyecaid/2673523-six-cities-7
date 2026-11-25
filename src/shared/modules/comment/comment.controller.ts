@@ -1,18 +1,18 @@
 import {Response} from 'express';
-import {StatusCodes} from 'http-status-codes';
 import {inject, injectable} from 'inversify';
 import {Component} from '../../types/index.js';
 import {fillDto} from '../../helpers/index.js';
 import {Logger} from '../../libs/logger/index.js';
 import {
+  AuthenticateMiddleware,
   BaseController,
   DocumentExistsMiddleware,
+  getCurrentUser,
   HttpMethod,
   ValidateDtoMiddleware,
   ValidateObjectIdMiddleware,
 } from '../../libs/rest/index.js';
 import {OfferService} from '../offer/offer-service.interface.js';
-import {UserService} from '../user/user-service.interface.js';
 import {CommentService} from './comment-service.interface.js';
 import {CreateCommentDto} from './dto/create-comment.dto.js';
 import {CommentRdo} from './rdo/comment.rdo.js';
@@ -24,7 +24,6 @@ export class CommentController extends BaseController {
     @inject(Component.Logger) logger: Logger,
     @inject(Component.CommentService) private readonly commentService: CommentService,
     @inject(Component.OfferService) offerService: OfferService,
-    @inject(Component.UserService) userService: UserService,
   ) {
     super(logger);
 
@@ -42,10 +41,10 @@ export class CommentController extends BaseController {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
+        new AuthenticateMiddleware(),
         validateOfferId,
         new ValidateDtoMiddleware(CreateCommentDto),
         offerExists,
-        new DocumentExistsMiddleware(userService, 'Пользователь', 'authorId', 'body', StatusCodes.BAD_REQUEST),
       ],
     });
   }
@@ -56,7 +55,11 @@ export class CommentController extends BaseController {
   }
 
   public async create({params, body}: CreateCommentRequest, res: Response): Promise<void> {
-    const comment = await this.commentService.create({...body, offerId: params.offerId});
+    const comment = await this.commentService.create({
+      ...body,
+      offerId: params.offerId,
+      authorId: getCurrentUser(res).id,
+    });
     this.created(res, fillDto(CommentRdo, comment));
   }
 }

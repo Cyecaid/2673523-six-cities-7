@@ -1,14 +1,21 @@
 ### Список предложений
 GET http://localhost:4000/offers?limit=10
 
+### Список предложений с избранным текущего пользователя
+GET http://localhost:4000/offers?limit=10
+Authorization: Bearer {{accessToken}}
+
 ### Премиальные предложения для города
-GET http://localhost:4000/offers/premium?city=Paris
+GET http://localhost:4000/offers/premium?city=Amsterdam
+Authorization: Bearer {{accessToken}}
 
 ### Детальная информация
 GET http://localhost:4000/offers/{{offerId}}
+Authorization: Bearer {{accessToken}}
 
 ### Создание предложения
 POST http://localhost:4000/offers
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -24,18 +31,22 @@ Content-Type: application/json
     "https://16.design.htmlacademy.pro/static/hotel/5.jpg",
     "https://16.design.htmlacademy.pro/static/hotel/6.jpg"
   ],
-  "isPremium": false,
+  "isPremium": true,
   "type": "apartment",
   "roomsCount": 2,
   "guestsCount": 3,
   "price": 2500,
   "amenities": ["Washer", "Fridge"],
-  "authorId": "{{userId}}",
   "location": {"latitude": 52.370216, "longitude": 4.895168}
 }
 
+> {%
+  client.global.set("offerId", response.body.id);
+%}
+
 ### Редактирование предложения
 PATCH http://localhost:4000/offers/{{offerId}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -44,3 +55,4 @@ Content-Type: application/json
 
 ### Удаление предложения
 DELETE http://localhost:4000/offers/{{offerId}}
+Authorization: Bearer {{accessToken}}

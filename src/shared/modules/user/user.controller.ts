@@ -2,14 +2,15 @@ import {rm} from 'node:fs/promises';
 import {Request, Response} from 'express';
 import {StatusCodes} from 'http-status-codes';
 import {inject, injectable} from 'inversify';
-import jwt from 'jsonwebtoken';
+import {SignJWT} from 'jose';
 import {Component} from '../../types/index.js';
 import {UPLOAD_URL_PATH} from '../../constants/index.js';
 import {createSha256, fillDto} from '../../helpers/index.js';
 import {Logger} from '../../libs/logger/index.js';
 import {Config, RestSchema} from '../../libs/config/index.js';
-import {AuthenticateMiddleware, BaseController, HttpError, HttpMethod, ValidateDtoMiddleware} from '../../libs/rest/index.js';
+import {AuthenticateMiddleware, BaseController, getCurrentUser, HttpError, HttpMethod, ValidateDtoMiddleware} from '../../libs/rest/index.js';
 import {UserService} from './user-service.interface.js';
+import {JWT_ALGORITHM, JWT_EXPIRATION} from './user.constant.js';
 import {UserRdo} from './rdo/user.rdo.js';
 import {CreateUserDto} from './dto/create-user.dto.js';
 import {LoginUserDto} from './dto/login-user.dto.js';
@@ -25,6 +26,7 @@ export class UserController extends BaseController {
   ) {
     super(logger);
 
+    const authenticate = new AuthenticateMiddleware();
     this.addRoute({
       path: '/register',
       method: HttpMethod.Post,
@@ -37,19 +39,23 @@ export class UserController extends BaseController {
       handler: this.login,
       middlewares: [new ValidateDtoMiddleware(LoginUserDto)],
     });
-    this.addRoute({path: '/login', method: HttpMethod.Get, handler: this.checkAuth});
+    this.addRoute({path: '/login', method: HttpMethod.Get, handler: this.checkAuth, middlewares: [authenticate]});
     this.addRoute({
       path: '/avatar',
       method: HttpMethod.Post,
       handler: this.uploadAvatar,
       middlewares: [
-        new AuthenticateMiddleware(this.config.get('JWT_SECRET')),
+        authenticate,
         new UploadAvatarMiddleware(this.config.get('UPLOAD_DIRECTORY')),
       ],
     });
   }
 
   public async create({body}: CreateUserRequest, res: Response): Promise<void> {
+    if (res.locals.user) {
+      throw new HttpError(StatusCodes.FORBIDDEN, 'Клиент уже авторизован', 'UserController');
+    }
+
     const existingUser = await this.userService.findByEmail(body.email);
     if (existingUser) {
       throw new HttpError(StatusCodes.CONFLICT, `Пользователь с email ${body.email} уже существует`, 'UserController');
@@ -65,16 +71,17 @@ export class UserController extends BaseController {
       throw new HttpError(StatusCodes.UNAUTHORIZED, 'Неверный email или пароль', 'UserController');
     }
 
-    const token = jwt.sign({}, this.config.get('JWT_SECRET'), {
-      algorithm: 'HS256',
-      subject: user.id,
-      expiresIn: '1h',
-    });
+    const token = await new SignJWT({})
+      .setProtectedHeader({alg: JWT_ALGORITHM})
+      .setSubject(user.id)
+      .setIssuedAt()
+      .setExpirationTime(JWT_EXPIRATION)
+      .sign(Buffer.from(this.config.get('JWT_SECRET'), 'utf8'));
     this.ok(res, {token, user: fillDto(UserRdo, user)});
   }
 
-  public async checkAuth(_req: Request, _res: Response): Promise<void> {
-    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'WIP', 'UserController');
+  public checkAuth(_req: Request, res: Response): void {
+    this.ok(res, fillDto(UserRdo, getCurrentUser(res)));
   }
 
   public async uploadAvatar({file}: Request, res: Response): Promise<void> {
@@ -83,7 +90,7 @@ export class UserController extends BaseController {
     }
 
     const avatarUrl = `${UPLOAD_URL_PATH}/${file.filename}`;
-    const userId: string = res.locals.userId;
+    const userId = getCurrentUser(res).id;
     try {
       const user = await this.userService.updateById(userId, {avatarUrl});
       if (!user) {

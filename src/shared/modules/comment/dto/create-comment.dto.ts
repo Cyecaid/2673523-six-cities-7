@@ -1,4 +1,4 @@
-import {IsInt, IsMongoId, IsString, Length, Max, Min} from 'class-validator';
+import {IsInt, IsString, Length, Max, Min} from 'class-validator';
 import {CommentLimit} from '../comment.constant.js';
 
 export class CreateCommentDto {
@@ -10,9 +10,9 @@ export class CreateCommentDto {
   @Min(CommentLimit.Rating.min)
   @Max(CommentLimit.Rating.max)
   public rating!: number;
-
-  public offerId!: string;
-
-  @IsMongoId()
-  public authorId!: string;
 }
+
+export type CreateCommentData = CreateCommentDto & {
+  offerId: string;
+  authorId: string;
+};

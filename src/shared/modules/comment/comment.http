@@ -1,24 +1,24 @@
 ### Комментарии к предложению
 GET http://localhost:4000/offers/{{offerId}}/comments
 
-### Добавить комментарий (authorId пока передаётся в теле)
+### Добавить комментарий
 POST http://localhost:4000/offers/{{offerId}}/comments
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
   "text": "Lovely place, would stay again!",
-  "rating": 5,
-  "authorId": "{{userId}}"
+  "rating": 5
 }
 
 ### Ошибка валидации
 POST http://localhost:4000/offers/{{offerId}}/comments
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
   "text": "Hi",
-  "rating": 7,
-  "authorId": "not-an-id"
+  "rating": 7
 }
 
 ### Некорректный ObjectId

@@ -1,4 +1,5 @@
 import express, {Express} from 'express';
+import asyncHandler from 'express-async-handler';
 import {inject, injectable} from 'inversify';
 import {Component} from '../shared/types/index.js';
 import {UPLOAD_URL_PATH} from '../shared/constants/index.js';
@@ -7,6 +8,8 @@ import {Config, RestSchema} from '../shared/libs/config/index.js';
 import {DatabaseClient} from '../shared/libs/database-client/index.js';
 import {Controller, ExceptionFilter} from '../shared/libs/rest/index.js';
 import {getMongoUri} from '../shared/helpers/index.js';
+import {IdentifyUserMiddleware} from '../shared/modules/user/identify-user.middleware.js';
+import {UserService} from '../shared/modules/user/user-service.interface.js';
 
 @injectable()
 export class RestApplication {
@@ -21,6 +24,7 @@ export class RestApplication {
     @inject(Component.OfferController) private readonly offerController: Controller,
     @inject(Component.FavoriteController) private readonly favoriteController: Controller,
     @inject(Component.CommentController) private readonly commentController: Controller,
+    @inject(Component.UserService) private readonly userService: UserService,
   ) {}
 
   private async initDatabase(): Promise<void> {
@@ -40,6 +44,8 @@ export class RestApplication {
       index: false,
       setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff'),
     }));
+    const identifyUser = new IdentifyUserMiddleware(this.config.get('JWT_SECRET'), this.userService);
+    this.server.use(asyncHandler(identifyUser.execute.bind(identifyUser)));
   }
 
   private initControllers(): void {

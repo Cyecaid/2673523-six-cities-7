@@ -5,7 +5,7 @@ import {City, Component} from '../../types/index.js';
 import {Logger} from '../../libs/logger/index.js';
 import {MongoEntityService} from '../../libs/entity-service/index.js';
 import {CommentEntity} from '../comment/index.js';
-import {CreateOfferDto} from './dto/create-offer.dto.js';
+import {CreateOfferData} from './dto/create-offer.dto.js';
 import {UpdateOfferDto} from './dto/update-offer.dto.js';
 import {OfferService} from './offer-service.interface.js';
 import {OfferEntity} from './offer.entity.js';
@@ -26,7 +26,7 @@ export class DefaultOfferService extends MongoEntityService<OfferEntity> impleme
     super(offerModel);
   }
 
-  public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
+  public async create(dto: CreateOfferData): Promise<DocumentType<OfferEntity>> {
     const result = await this.model.create({...dto, postDate: dto.postDate ?? new Date()});
     this.logger.info(`Создано предложение «${dto.title}»`);
     return result;
